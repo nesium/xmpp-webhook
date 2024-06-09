@@ -1,0 +1,24 @@
+[package]
+name = "xmpp-webhook"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+path = "src/main.rs"
+name = "xmpp-webhook"
+
+[dependencies]
+actix-web = "4.6"
+anyhow = "1.0"
+config = "0.14"
+futures = "0.3"
+jid = { git = "https://gitlab.com/nesium/xmpp-rs", branch = "main", default-features = false }
+prose-xmpp = { git = "https://github.com/prose-im/prose-core-client.git", branch = "master" }
+serde = { version = "1.0", features = ["derive"] }
+serde-aux = "4.5"
+tokio = { version = "1.38", features = ["rt", "rt-multi-thread", "macros"] }
+tracing = { version = "0.1", features = ["log"] }
+tracing-actix-web = "0.7"
+tracing-bunyan-formatter = "0.3"
+tracing-log = "0.2"
+tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
