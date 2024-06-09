@@ -51,7 +51,7 @@ pub fn run(listener: TcpListener, xmpp: XMPP, base_url: ApplicationBaseUrl) -> R
         actix_web::App::new()
             .wrap(TracingLogger::default())
             .route("/", web::get().to(home))
-            .route("/", web::get().to(health_check))
+            .route("/health_check", web::get().to(health_check))
             .route("/ping", web::get().to(ping))
             .app_data(xmpp.clone())
             .app_data(base_url.clone())
