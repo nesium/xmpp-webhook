@@ -31,10 +31,10 @@ services:
     envs:
       - key: APP_XMPP__JID
         scope: RUN_TIME
-        value: ${xmpp.JID}
+        value: ${XMPP_JID}
       - key: APP_XMPP__PASSWORD
         scope: RUN_TIME
-        value: ${xmpp.PASSWORD}
+        value: ${XMPP_PASSWORD}
       - key: APP_APP__BASE_URL
         scope: RUN_TIME
         value: ${APP_URL}
