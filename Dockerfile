@@ -15,6 +15,9 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef as builder
 COPY --from=planner /app/recipe.json recipe.json
+
+RUN rustup component add rustfmt
+
 # Build our project dependencies, not our application!
 RUN cargo chef cook --release --recipe-path recipe.json
 # Up to this point, if our dependency tree stays the same,
