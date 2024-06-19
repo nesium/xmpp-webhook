@@ -3543,6 +3543,7 @@ dependencies = [
  "serde",
  "serde-aux",
  "serde_json",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-actix-web",

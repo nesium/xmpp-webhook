@@ -1,23 +1,46 @@
 use std::str::FromStr;
 
-use actix_web::{web, HttpResponse, Responder};
-use github_webhook::payload_types::Schema;
+use actix_web::http::StatusCode;
+use actix_web::{web, HttpRequest, HttpResponse, Responder, ResponseError};
+use github_webhook::payload_types::PushEvent;
 use jid::BareJid;
 
 use crate::xmpp::XMPPHandle;
 
-pub async fn commit_hook<'a>(xmpp: web::Data<XMPPHandle>, body: web::Bytes) -> impl Responder {
-    let payload = match serde_json::from_slice::<Schema>(&body) {
-        Ok(payload) => payload,
-        Err(err) => {
-            return HttpResponse::BadRequest()
-                .body(format!("Failed to deserialize payload: {}", err))
+#[derive(thiserror::Error, Debug)]
+pub enum WebhookError {
+    #[error("Missing event type")]
+    MissingEventType,
+    #[error(transparent)]
+    DeserializationError(#[from] serde_json::Error),
+}
+
+impl ResponseError for WebhookError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            WebhookError::MissingEventType => StatusCode::BAD_REQUEST,
+            WebhookError::DeserializationError(_) => StatusCode::BAD_REQUEST,
         }
+    }
+}
+
+pub async fn commit_hook<'a>(
+    req: HttpRequest,
+    xmpp: web::Data<XMPPHandle>,
+    body: web::Bytes,
+) -> Result<impl Responder, WebhookError> {
+    let Some(event_type) = req
+        .headers()
+        .get("X-GitHub-Event")
+        .and_then(|val| val.to_str().ok())
+    else {
+        return Err(WebhookError::MissingEventType);
     };
 
-    let message = match payload {
-        Schema::PushEvent(event) => {
-            let commits_markdown: Vec<String> = event
+    let message = match event_type {
+        "push" => {
+            let payload = serde_json::from_slice::<PushEvent>(&body)?;
+            let commits_markdown: Vec<String> = payload
                 .commits
                 .iter()
                 .map(|commit| {
@@ -34,13 +57,13 @@ pub async fn commit_hook<'a>(xmpp: web::Data<XMPPHandle>, body: web::Bytes) -> i
 
             format!(
                 "New commits pushed to repository **{}**:\n\n{}",
-                event.repository.name,
+                payload.repository.name,
                 commits_markdown.join("\n")
             )
         }
-        _ => return HttpResponse::Ok().body(format!("{:?}", payload)),
+        _ => return Ok(HttpResponse::Ok().body("ok")),
     };
 
     xmpp.send_message(BareJid::from_str("marc@prose.org").unwrap(), message);
-    HttpResponse::Ok().body("message sent")
+    Ok(HttpResponse::Ok().body("message sent"))
 }
