@@ -38,9 +38,9 @@ pub async fn commit_hook<'a>(xmpp: web::Data<XMPPHandle>, body: web::Bytes) -> i
                 commits_markdown.join("\n")
             )
         }
-        _ => return HttpResponse::Ok().body("ok"),
+        _ => return HttpResponse::Ok().body(format!("{:?}", payload)),
     };
 
     xmpp.send_message(BareJid::from_str("marc@prose.org").unwrap(), message);
-    HttpResponse::Ok().body("ok")
+    HttpResponse::Ok().body("message sent")
 }
