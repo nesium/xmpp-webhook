@@ -1,5 +1,6 @@
 use anyhow::format_err;
 use config::{Config, ConfigError, File};
+use jid::BareJid;
 use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
 
@@ -19,7 +20,7 @@ pub struct AppSettings {
 
 #[derive(Deserialize, Clone)]
 pub struct XMPPSettings {
-    pub jid: String,
+    pub jid: BareJid,
     pub password: String,
 }
 

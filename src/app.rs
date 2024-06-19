@@ -8,7 +8,7 @@ use tracing_actix_web::TracingLogger;
 
 use crate::config::Settings;
 use crate::routes::{commit_hook, health_check, home, ping};
-use crate::xmpp::XMPP;
+use crate::xmpp::XMPPHandle;
 
 pub struct App {
     server: Server,
@@ -29,9 +29,11 @@ impl App {
 
         info!("Started server on {port}.");
 
-        let xmpp = XMPP::build(config.xmpp).await?;
-
-        let server = run(listener, xmpp, ApplicationBaseUrl(config.app.base_url))?;
+        let server = run(
+            listener,
+            XMPPHandle::new(config.xmpp),
+            ApplicationBaseUrl(config.app.base_url),
+        )?;
 
         Ok(Self { server })
     }
@@ -43,7 +45,11 @@ impl App {
 
 pub struct ApplicationBaseUrl(pub String);
 
-pub fn run(listener: TcpListener, xmpp: XMPP, base_url: ApplicationBaseUrl) -> Result<Server> {
+pub fn run(
+    listener: TcpListener,
+    xmpp: XMPPHandle,
+    base_url: ApplicationBaseUrl,
+) -> Result<Server> {
     let xmpp = web::Data::new(xmpp);
     let base_url = web::Data::new(base_url);
 

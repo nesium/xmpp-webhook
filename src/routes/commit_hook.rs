@@ -1,58 +1,46 @@
-use crate::xmpp::XMPP;
-use actix_web::{web, HttpResponse, Responder};
-use jid::BareJid;
-use serde::Deserialize;
 use std::str::FromStr;
 
-#[derive(Deserialize)]
-struct Commit {
-    id: String,
-    message: String,
-    url: String,
-    author: Author,
-}
+use actix_web::{web, HttpResponse, Responder};
+use github_webhook::payload_types::Schema;
+use jid::BareJid;
 
-#[derive(Deserialize)]
-struct Author {
-    name: String,
-    email: String,
-}
+use crate::xmpp::XMPPHandle;
 
-#[derive(Deserialize)]
-pub struct Payload {
-    repository: Repository,
-    commits: Vec<Commit>,
-}
+pub async fn commit_hook<'a>(xmpp: web::Data<XMPPHandle>, body: web::Bytes) -> impl Responder {
+    let payload = match serde_json::from_slice::<Schema>(&body) {
+        Ok(payload) => payload,
+        Err(err) => {
+            return HttpResponse::BadRequest()
+                .body(format!("Failed to deserialize payload: {}", err))
+        }
+    };
 
-#[derive(Deserialize)]
-struct Repository {
-    name: String,
-}
+    let message = match payload {
+        Schema::PushEvent(event) => {
+            let commits_markdown: Vec<String> = event
+                .commits
+                .iter()
+                .map(|commit| {
+                    format!(
+                        "- **Commit**: [{}]({})\n  **Author**: {} <{}>\n  **Message**: {}\n",
+                        &commit.id[..7],
+                        commit.url,
+                        commit.author.name,
+                        commit.author.email.unwrap_or("<no email>"),
+                        commit.message
+                    )
+                })
+                .collect();
 
-pub async fn commit_hook(xmpp: web::Data<XMPP>, payload: web::Json<Payload>) -> impl Responder {
-    let commits_markdown: Vec<String> = payload
-        .commits
-        .iter()
-        .map(|commit| {
             format!(
-                "- **Commit**: [{}]({})\n  **Author**: {} <{}>\n  **Message**: {}\n",
-                &commit.id[..7],
-                commit.url,
-                commit.author.name,
-                commit.author.email,
-                commit.message
+                "New commits pushed to repository **{}**:\n\n{}",
+                event.repository.name,
+                commits_markdown.join("\n")
             )
-        })
-        .collect();
+        }
+        _ => return HttpResponse::Ok().body("ok"),
+    };
 
-    let message = format!(
-        "New commits pushed to repository **{}**:\n\n{}",
-        payload.repository.name,
-        commits_markdown.join("\n")
-    );
-
-    xmpp.send_message(BareJid::from_str("marc@prose.org").unwrap(), message)
-        .unwrap();
-
-    HttpResponse::Ok().body("Webhook received")
+    xmpp.send_message(BareJid::from_str("marc@prose.org").unwrap(), message);
+    HttpResponse::Ok().body("ok")
 }

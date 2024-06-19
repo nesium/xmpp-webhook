@@ -12,10 +12,12 @@ actix-web = "4.6"
 anyhow = "1.0"
 config = "0.14"
 futures = "0.3"
-jid = { git = "https://gitlab.com/nesium/xmpp-rs", branch = "main", default-features = false }
+github-webhook = "0.5"
+jid = { git = "https://gitlab.com/nesium/xmpp-rs", branch = "main", features = ["serde"] }
 prose-xmpp = { git = "https://github.com/prose-im/prose-core-client.git", branch = "master" }
 serde = { version = "1.0", features = ["derive"] }
 serde-aux = "4.5"
+serde_json = "1.0"
 tokio = { version = "1.38", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-actix-web = "0.7"
