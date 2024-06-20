@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::webhook::format;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpRequest, HttpResponse, Responder, ResponseError};
-use github_webhook::payload_types::{IssuesEvent, PushEvent};
+use github_webhook::payload_types::{IssueCommentEvent, IssuesEvent, PushEvent};
 use prose_xmpp::BareJid;
 
 use crate::xmpp::XMPPHandle;
@@ -47,6 +47,15 @@ pub async fn webhook(
             let event = serde_json::from_slice::<IssuesEvent>(&body)?;
             match event {
                 IssuesEvent::Opened(event) => format::format_issue_opened(&event),
+                IssuesEvent::Closed(event) => format::format_issue_closed(&event),
+                IssuesEvent::Reopened(event) => format::format_issue_reopened(&event),
+                _ => return Ok(HttpResponse::Ok().body("ok")),
+            }
+        }
+        "issue_comment" => {
+            let event = serde_json::from_slice::<IssueCommentEvent>(&body)?;
+            match event {
+                IssueCommentEvent::Created(event) => format::format_issue_comment_created(&event),
                 _ => return Ok(HttpResponse::Ok().body("ok")),
             }
         }
