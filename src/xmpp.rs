@@ -109,7 +109,11 @@ impl XMPPService {
         match msg {
             XMPPServiceMessage::SendMessage { to, body } => {
                 let chat = self.client.get_mod::<mods::Chat>();
-                chat.send_message(to, body, &MessageType::Chat, None)?;
+                let message_type = match &to {
+                    RoomId::User(_) => MessageType::Chat,
+                    RoomId::Room(_) => MessageType::Groupchat,
+                };
+                chat.send_message(to, body, &message_type, None)?;
             }
         }
         Ok(())
