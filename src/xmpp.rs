@@ -4,18 +4,32 @@ use std::sync::Arc;
 use anyhow::Result;
 use futures::FutureExt;
 use prose_xmpp::connector::xmpp_rs::Connector;
-use prose_xmpp::mods::Status;
 use prose_xmpp::stanza::message::MessageType;
 use prose_xmpp::stanza::presence::Show;
 use prose_xmpp::stanza::Message;
 use prose_xmpp::{
-    client::Event as ClientEvent, mods, mods::chat::Event as ChatEvent, Client, ConnectionError,
-    Event, Jid, Secret,
+    client::Event as ClientEvent, mods, mods::chat::Event as ChatEvent, BareJid, Client,
+    ConnectionError, Event, Jid, Secret,
 };
 use tokio::sync::mpsc;
 use tracing::{info, warn};
 
 use crate::config::XMPPSettings;
+
+pub enum RoomId {
+    User(BareJid),
+    Room(BareJid),
+}
+
+impl From<RoomId> for Jid {
+    fn from(value: RoomId) -> Self {
+        match value {
+            RoomId::User(jid) => jid,
+            RoomId::Room(jid) => jid,
+        }
+        .into()
+    }
+}
 
 #[derive(Clone)]
 pub struct XMPPHandle {
@@ -23,17 +37,17 @@ pub struct XMPPHandle {
 }
 
 impl XMPPHandle {
-    pub fn new(config: XMPPSettings) -> Self {
+    pub fn new(config: XMPPSettings, rooms: Vec<BareJid>) -> Self {
         let (sender, receiver) = mpsc::channel(20);
-        let mut actor = XMPPService::new(config, receiver);
+        let mut actor = XMPPService::new(config, rooms, receiver);
         tokio::spawn(async move { actor.run().await });
         Self { sender }
     }
 
-    pub fn send_message(&self, to: impl Into<Jid>, message: impl Into<String>) {
+    pub fn send_message(&self, to: RoomId, message: impl Into<String>) {
         self.sender
             .send(XMPPServiceMessage::SendMessage {
-                to: to.into(),
+                to,
                 body: message.into(),
             })
             .now_or_never();
@@ -41,18 +55,23 @@ impl XMPPHandle {
 }
 
 enum XMPPServiceMessage {
-    SendMessage { to: Jid, body: String },
+    SendMessage { to: RoomId, body: String },
 }
 
 struct XMPPService {
     config: XMPPSettings,
+    rooms: Vec<BareJid>,
     receiver: mpsc::Receiver<XMPPServiceMessage>,
     client: Client,
     is_connected: Arc<AtomicBool>,
 }
 
 impl XMPPService {
-    fn new(config: XMPPSettings, receiver: mpsc::Receiver<XMPPServiceMessage>) -> Self {
+    fn new(
+        config: XMPPSettings,
+        rooms: Vec<BareJid>,
+        receiver: mpsc::Receiver<XMPPServiceMessage>,
+    ) -> Self {
         let is_connected = Arc::new(AtomicBool::new(false));
 
         let client = Client::builder()
@@ -70,6 +89,7 @@ impl XMPPService {
 
         Self {
             config,
+            rooms,
             receiver,
             client,
             is_connected,
@@ -77,6 +97,8 @@ impl XMPPService {
     }
 
     async fn run(&mut self) {
+        _ = self.connect_if_needed().await;
+
         while let Some(msg) = self.receiver.recv().await {
             _ = self.connect_if_needed().await;
             _ = self.handle_message(msg).await;
@@ -110,9 +132,33 @@ impl XMPPService {
             .await?;
         info!("Connected.");
 
-        self.client
-            .get_mod::<Status>()
-            .send_presence(None, Some(Show::Chat), None, None, None)?;
+        self.client.get_mod::<mods::Status>().send_presence(
+            None,
+            Some(Show::Chat),
+            None,
+            None,
+            None,
+        )?;
+
+        let muc = self.client.get_mod::<mods::MUC>();
+        for room in &self.rooms {
+            info!("Entering room {room}…");
+            muc.enter_room(
+                &room.with_resource_str("bot").unwrap(),
+                None,
+                Some(Show::Chat),
+                None,
+            )
+            .await?;
+        }
+
+        let chat = self.client.get_mod::<mods::Chat>();
+        chat.send_message(
+            Jid::new("marc@prose.org").unwrap(),
+            "🚀",
+            &MessageType::Chat,
+            None,
+        )?;
 
         Ok(())
     }

@@ -4,13 +4,14 @@ use prose_xmpp::BareJid;
 use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Settings {
     pub app: AppSettings,
     pub xmpp: XMPPSettings,
+    pub webhook: WebhookSettings,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct AppSettings {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
@@ -18,10 +19,21 @@ pub struct AppSettings {
     pub base_url: String,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct XMPPSettings {
     pub jid: BareJid,
     pub password: String,
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub struct WebhookSettings {
+    pub repos: Vec<RepoSettings>,
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub struct RepoSettings {
+    pub repo: String,
+    pub room: BareJid,
 }
 
 pub enum Environment {
