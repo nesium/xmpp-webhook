@@ -7,7 +7,7 @@ use tracing::info;
 use tracing_actix_web::TracingLogger;
 
 use crate::config::Settings;
-use crate::routes::{commit_hook, health_check, home, ping};
+use crate::routes::{health_check, home, ping, webhook};
 use crate::xmpp::XMPPHandle;
 
 pub struct App {
@@ -59,7 +59,7 @@ pub fn run(
             .route("/", web::get().to(home))
             .route("/health_check", web::get().to(health_check))
             .route("/ping", web::get().to(ping))
-            .route("/commit_hook", web::post().to(commit_hook))
+            .route("/webhook", web::post().to(webhook))
             .app_data(xmpp.clone())
             .app_data(base_url.clone())
     })

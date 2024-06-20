@@ -1,0 +1,9 @@
+---
+source: tests/webhook/main.rs
+expression: "format_issue_opened(&serde_json::from_str::<IssuesOpenedEvent>(contents).unwrap())"
+---
+[Codertocat](https://github.com/Codertocat) has opened a new issue #1 in [Hello-World](https://github.com/Codertocat/Hello-World).
+
+Title: Spelling error in the README file
+
+[View it here](https://github.com/Codertocat/Hello-World/issues/1).

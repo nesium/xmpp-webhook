@@ -1,8 +1,9 @@
 use std::str::FromStr;
 
+use crate::webhook::format;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpRequest, HttpResponse, Responder, ResponseError};
-use github_webhook::payload_types::PushEvent;
+use github_webhook::payload_types::{IssuesEvent, PushEvent};
 use prose_xmpp::BareJid;
 
 use crate::xmpp::XMPPHandle;
@@ -24,7 +25,7 @@ impl ResponseError for WebhookError {
     }
 }
 
-pub async fn commit_hook<'a>(
+pub async fn webhook(
     req: HttpRequest,
     xmpp: web::Data<XMPPHandle>,
     body: web::Bytes,
@@ -39,27 +40,15 @@ pub async fn commit_hook<'a>(
 
     let message = match event_type {
         "push" => {
-            let payload = serde_json::from_slice::<PushEvent>(&body)?;
-            let commits_markdown: Vec<String> = payload
-                .commits
-                .iter()
-                .map(|commit| {
-                    format!(
-                        "- **Commit**: [{}]({})\n  **Author**: {} <{}>\n  **Message**: {}\n",
-                        &commit.id[..7],
-                        commit.url,
-                        commit.author.name,
-                        commit.author.email.unwrap_or("<no email>"),
-                        commit.message
-                    )
-                })
-                .collect();
-
-            format!(
-                "New commits pushed to repository **{}**:\n\n{}",
-                payload.repository.name,
-                commits_markdown.join("\n")
-            )
+            let event = serde_json::from_slice::<PushEvent>(&body)?;
+            format::format_push_event(&event)
+        }
+        "issues" => {
+            let event = serde_json::from_slice::<IssuesEvent>(&body)?;
+            match event {
+                IssuesEvent::Opened(event) => format::format_issue_opened(&event),
+                _ => return Ok(HttpResponse::Ok().body("ok")),
+            }
         }
         _ => return Ok(HttpResponse::Ok().body("ok")),
     };

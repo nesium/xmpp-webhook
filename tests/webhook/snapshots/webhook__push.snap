@@ -1,0 +1,9 @@
+---
+source: tests/webhook/main.rs
+expression: "format_push_event(&serde_json::from_str::<PushEvent>(contents).unwrap())"
+---
+New commits pushed to [Hello-World](https://github.com/Codertocat/Hello-World):
+
+- **Commit**: [6113728](https://github.com/Codertocat/Hello-World/commit/6113728f27ae82c7b1a177c8d03f9e96e0adf246)
+  **Author**: Codertocat <21031067+Codertocat@users.noreply.github.com>
+  **Message**: Initial commit

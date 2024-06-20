@@ -1,14 +1,8 @@
 use anyhow::Result;
 
-use crate::app::App;
-use crate::config::get_configuration;
-use crate::telemetry::{build_subscriber, init_subscriber};
-
-mod app;
-mod config;
-mod routes;
-mod telemetry;
-mod xmpp;
+use xmpp_webhook::app::App;
+use xmpp_webhook::config::get_configuration;
+use xmpp_webhook::telemetry::{build_subscriber, init_subscriber};
 
 #[tokio::main]
 async fn main() -> Result<()> {
