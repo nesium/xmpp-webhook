@@ -17,7 +17,7 @@ pub fn format_push_event(event: &PushEvent) -> String {
         .collect();
 
     format!(
-        "New commits pushed to [{}]({}):\n\n{}",
+        "New commits pushed to [{}]({})\n\n{}",
         event.repository.name,
         event.repository.html_url,
         commits_markdown.join("\n")
@@ -26,11 +26,9 @@ pub fn format_push_event(event: &PushEvent) -> String {
 
 pub fn format_issue_opened(event: &IssuesOpenedEvent) -> String {
     format!(
-        r#"[{user}]({user_url}) has opened a new issue #{issue_number} in [{repo}]({repo_url}).
+        r#"[{user}]({user_url}) has opened [issue #{issue_number}]({issue_url}) in [{repo}]({repo_url})
 
-Title: {issue_title}
-
-[View it here]({issue_url}).
+**Title**: {issue_title}
         "#,
         user = event.issue.issue.user.login,
         user_url = event.issue.issue.user.html_url,
