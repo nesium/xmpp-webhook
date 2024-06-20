@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use futures::FutureExt;
-use jid::Jid;
 use prose_xmpp::connector::xmpp_rs::Connector;
 use prose_xmpp::mods::Status;
 use prose_xmpp::stanza::message::MessageType;
@@ -11,7 +10,7 @@ use prose_xmpp::stanza::presence::Show;
 use prose_xmpp::stanza::Message;
 use prose_xmpp::{
     client::Event as ClientEvent, mods, mods::chat::Event as ChatEvent, Client, ConnectionError,
-    Event, Secret,
+    Event, Jid, Secret,
 };
 use tokio::sync::mpsc;
 use tracing::{info, warn};
@@ -144,6 +143,7 @@ fn handle_client_event(event: ClientEvent, is_connected: &AtomicBool) {
             );
             is_connected.store(false, Ordering::Release);
         }
+        ClientEvent::PingTimer => {}
     }
 }
 

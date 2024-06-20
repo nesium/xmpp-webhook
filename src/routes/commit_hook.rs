@@ -3,7 +3,7 @@ use std::str::FromStr;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpRequest, HttpResponse, Responder, ResponseError};
 use github_webhook::payload_types::PushEvent;
-use jid::BareJid;
+use prose_xmpp::BareJid;
 
 use crate::xmpp::XMPPHandle;
 

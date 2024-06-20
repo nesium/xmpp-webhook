@@ -1,6 +1,6 @@
 use anyhow::format_err;
 use config::{Config, ConfigError, File};
-use jid::BareJid;
+use prose_xmpp::BareJid;
 use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
 

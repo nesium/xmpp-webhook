@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use actix_web::http::header::ContentType;
 use actix_web::{web, HttpResponse, Responder};
-use jid::BareJid;
+use prose_xmpp::BareJid;
 
 use crate::xmpp::XMPPHandle;
 
