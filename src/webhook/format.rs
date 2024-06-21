@@ -1,4 +1,4 @@
-use github_webhook::payload_types::{
+use crate::webhook::types::{
     IssueCommentCreatedEvent, IssuesClosedEvent, IssuesOpenedEvent, IssuesReopenedEvent, PushEvent,
 };
 
@@ -12,7 +12,7 @@ pub fn format_push_event(event: &PushEvent) -> String {
                 &commit.id[..7],
                 commit.url,
                 commit.author.name,
-                commit.author.email.unwrap_or("<no email>"),
+                commit.author.email.as_deref().unwrap_or("<no email>"),
                 commit.message
             )
         })

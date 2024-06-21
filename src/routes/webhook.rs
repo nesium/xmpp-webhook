@@ -1,7 +1,7 @@
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpRequest, HttpResponse, Responder, ResponseError};
-use github_webhook::payload_types::{IssueCommentEvent, IssuesEvent, PushEvent};
 
+use crate::webhook::types::{IssueCommentEvent, IssuesEvent, PushEvent};
 use crate::webhook::{format, RepoMapping};
 use crate::xmpp::{RoomId, XMPPHandle};
 
@@ -36,28 +36,28 @@ pub async fn webhook(
         return Err(WebhookError::MissingEventType);
     };
 
-    let (repo, message) = match event_type {
+    let (message, repo) = match event_type {
         "push" => {
             let event = serde_json::from_slice::<PushEvent>(&body)?;
             (
-                event.repository.full_name,
                 format::format_push_event(&event),
+                event.repository.full_name,
             )
         }
         "issues" => {
             let event = serde_json::from_slice::<IssuesEvent>(&body)?;
             match event {
                 IssuesEvent::Opened(event) => (
-                    event.repository.full_name,
                     format::format_issue_opened(&event),
+                    event.repository.full_name,
                 ),
                 IssuesEvent::Closed(event) => (
-                    event.repository.full_name,
                     format::format_issue_closed(&event),
+                    event.repository.full_name,
                 ),
                 IssuesEvent::Reopened(event) => (
-                    event.repository.full_name,
                     format::format_issue_reopened(&event),
+                    event.repository.full_name,
                 ),
                 _ => return Ok(HttpResponse::Ok().body("ok")),
             }
@@ -66,8 +66,8 @@ pub async fn webhook(
             let event = serde_json::from_slice::<IssueCommentEvent>(&body)?;
             match event {
                 IssueCommentEvent::Created(event) => (
-                    event.repository.full_name,
                     format::format_issue_comment_created(&event),
+                    event.repository.full_name,
                 ),
                 _ => return Ok(HttpResponse::Ok().body("ok")),
             }
@@ -75,7 +75,7 @@ pub async fn webhook(
         _ => return Ok(HttpResponse::Ok().body("ok")),
     };
 
-    let Some(jid) = mapping.get(repo) else {
+    let Some(jid) = mapping.get(&repo) else {
         return Ok(HttpResponse::Ok().body("unknown repo"));
     };
 

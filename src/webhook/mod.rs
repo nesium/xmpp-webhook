@@ -6,6 +6,7 @@ use prose_xmpp::BareJid;
 use crate::config::RepoSettings;
 
 pub mod format;
+pub mod types;
 
 #[derive(Debug, Clone)]
 pub struct RepoMapping(Arc<HashMap<String, BareJid>>);
