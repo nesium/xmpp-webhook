@@ -45,6 +45,7 @@ RUN apt-get update -y \
 COPY --from=builder /app/target/release/xmpp-webhook xmpp-webhook
 # We need the configuration file at runtime!
 COPY config config
+COPY templates templates
 
 # When `docker run` is executed, launch the binary!
 ENV APP_ENVIRONMENT production

@@ -12,6 +12,7 @@ actix-web = "4.6"
 anyhow = "1.0"
 config = "0.14"
 futures = "0.3"
+minijinja = { version = "2.0", features = ["loader"] }
 prose-xmpp = { git = "https://github.com/prose-im/prose-core-client.git", branch = "master" }
 serde = { version = "1.0", features = ["derive"] }
 serde-aux = "4.5"
@@ -25,4 +26,6 @@ tracing-log = "0.2"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
 
 [dev-dependencies]
+ctor = "0.2"
 insta = "1.39"
+reqwest = "0.12"

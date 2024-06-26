@@ -15,11 +15,8 @@ use tokio::sync::mpsc;
 use tracing::{info, warn};
 
 use crate::config::XMPPSettings;
-
-pub enum RoomId {
-    User(BareJid),
-    Room(BareJid),
-}
+use crate::services::xmpp_service::RoomId;
+use crate::services::XMPPService as XMPPServiceTrait;
 
 impl From<RoomId> for Jid {
     fn from(value: RoomId) -> Self {
@@ -43,13 +40,12 @@ impl XMPPHandle {
         tokio::spawn(async move { actor.run().await });
         Self { sender }
     }
+}
 
-    pub fn send_message(&self, to: RoomId, message: impl Into<String>) {
+impl XMPPServiceTrait for XMPPHandle {
+    fn send_message(&self, to: RoomId, message: String) {
         self.sender
-            .send(XMPPServiceMessage::SendMessage {
-                to,
-                body: message.into(),
-            })
+            .send(XMPPServiceMessage::SendMessage { to, body: message })
             .now_or_never();
     }
 }

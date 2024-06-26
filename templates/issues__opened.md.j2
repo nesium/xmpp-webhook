@@ -1,0 +1,8 @@
+{% with %}
+{% set user = event.issue.user %}
+{% set repo = event.repository %}
+{% set issue = event.issue %}
+[{{ user.login }}]({{ user.html_url }}) has opened [issue #{{ issue.number }}]({{ issue.html_url }}) in [{{ repo.name }}]({{ repo.html_url }})
+
+**Title**: {{ issue.title }}
+{% endwith %}
