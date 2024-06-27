@@ -60,6 +60,9 @@ pub async fn webhook(
         return Ok(HttpResponse::Ok().body("unknown repo"));
     };
 
+    // Documentation: https://docs.github.com/en/webhooks/webhook-events-and-payloads#issue_comment
+    // Payload examples: https://github.com/octokit/webhooks/tree/main/payload-examples
+
     let template_name = event
         .get("action")
         .and_then(|action| action.as_str())

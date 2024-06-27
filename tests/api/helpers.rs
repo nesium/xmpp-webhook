@@ -19,10 +19,16 @@ pub async fn spawn_app() -> TestApp {
     let mut config = get_configuration().expect("Failed to read configuration");
     // Use a random OS port
     config.app.port = 0;
-    config.webhook.repos = vec![RepoSettings {
-        repo: "Codertocat/Hello-World".to_string(),
-        room: "room@example.org".parse().unwrap(),
-    }];
+    config.webhook.repos = vec![
+        RepoSettings {
+            repo: "Codertocat/Hello-World".to_string(),
+            room: "room@example.org".parse().unwrap(),
+        },
+        RepoSettings {
+            repo: "prose-im/prose-core-client".to_string(),
+            room: "room@example.org".parse().unwrap(),
+        },
+    ];
 
     let xmpp = MockXMPPService::default();
 
