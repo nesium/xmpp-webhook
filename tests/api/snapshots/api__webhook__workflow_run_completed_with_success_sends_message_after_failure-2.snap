@@ -1,0 +1,14 @@
+---
+source: tests/api/webhook.rs
+expression: "app.xmpp.sent_messages()[0].message"
+---
+🟢 Workflow [Fail on Push](https://github.com/nesium/test_repo/actions/runs/9703924258) succeeded!
+
+**Repository**: [test_repo](https://github.com/nesium/test_repo)
+**Branch**: [main](https://github.com/nesium/test_repo/tree/main)
+**Commit**: [c00690e](https://github.com/nesium/test_repo/commit/c00690ee16f965fa67d269a24409f015f2c2cb33)
+**Author**: mb <mb@nesium.com>
+**Message**:
+```
+succeed
+```

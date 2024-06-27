@@ -28,6 +28,10 @@ pub async fn spawn_app() -> TestApp {
             repo: "prose-im/prose-core-client".to_string(),
             room: "room@example.org".parse().unwrap(),
         },
+        RepoSettings {
+            repo: "nesium/test_repo".to_string(),
+            room: "room@example.org".parse().unwrap(),
+        },
     ];
 
     let xmpp = MockXMPPService::default();
@@ -50,6 +54,10 @@ pub struct MockXMPPService {
 impl MockXMPPService {
     pub fn sent_messages(&self) -> Vec<SentMessage> {
         self.inner.lock().unwrap().sent_messages.clone()
+    }
+
+    pub fn reset_sent_messages(&self) {
+        self.inner.lock().unwrap().sent_messages.clear();
     }
 }
 

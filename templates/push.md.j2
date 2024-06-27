@@ -1,6 +1,6 @@
 {% with %}
 {% set branch = event.ref | split('/') | last %}
-New commits pushed to [{{ event.repository.name }}]({{ event.repository.html_url }}) on branch [{{ branch }}]({{ event.repository.html_url }}/tree/vcard)
+New commits pushed to [{{ event.repository.name }}]({{ event.repository.html_url }}) on branch [{{ branch }}]({{ event.repository.html_url }}/tree/{{ branch }})
 
 {% for commit in event.commits -%}
 **Commit**: [{{ commit.id[:7] }}]({{ commit.url }})

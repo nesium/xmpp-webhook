@@ -1,0 +1,16 @@
+{% with %}
+{% set commit = event.workflow_run.head_commit %}
+{% set branch = event.workflow_run.head_branch %}
+{% set result = "succeeded" if event.workflow_run.conclusion == "success" else "failed" %}
+{% set emoji = "🟢" if event.workflow_run.conclusion == "success" else "🔴" %}
+{{ emoji }} Workflow [{{ event.workflow_run.name }}]({{ event.workflow_run.html_url }}) {{ result }}!
+
+**Repository**: [{{ event.repository.name }}]({{ event.repository.html_url }})
+**Branch**: [{{ branch }}]({{ event.repository.html_url }}/tree/{{ branch }})
+**Commit**: [{{ commit.id[:7] }}]({{ event.repository.html_url }}/commit/{{ commit.id }})
+**Author**: {{ commit.author.name }} <{{ commit.author.email | default("no email") }}>
+**Message**:
+```
+{{ commit.message }}
+```
+{% endwith %}

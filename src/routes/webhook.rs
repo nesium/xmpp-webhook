@@ -9,7 +9,7 @@ use tracing::info;
 
 use crate::services::xmpp_service::RoomId;
 use crate::services::XMPPService;
-use crate::webhook::RepoMapping;
+use crate::webhook::{RepoMapping, WorkflowRunsStore};
 
 #[derive(thiserror::Error, Debug)]
 pub enum WebhookError {
@@ -39,6 +39,7 @@ pub async fn webhook(
     xmpp: web::Data<Arc<dyn XMPPService>>,
     body: web::Bytes,
     mapping: web::Data<RepoMapping>,
+    workflow_runs: web::Data<WorkflowRunsStore>,
     environment: web::Data<Environment<'_>>,
 ) -> Result<impl Responder, WebhookError> {
     let Some(event_type) = req
@@ -59,6 +60,35 @@ pub async fn webhook(
     let Some(jid) = mapping.get(&repo) else {
         return Ok(HttpResponse::Ok().body("unknown repo"));
     };
+
+    match event_type {
+        "workflow_run" => {
+            // We want to send a message for each failed workflow run, for succeeded workflow runs
+            // however we only want to send a message if we had a prior identical failed
+            // workflow run.
+
+            let workflow_id: u64 = event["workflow_run"]["workflow_id"]
+                .as_u64()
+                .unwrap_or_default();
+            let head_branch = event["workflow_run"]["head_branch"]
+                .as_str()
+                .unwrap_or_default();
+
+            match event["workflow_run"]["conclusion"]
+                .as_str()
+                .unwrap_or_default()
+            {
+                "success" => {
+                    if !workflow_runs.workflow_succeeded(repo, workflow_id, head_branch) {
+                        return Ok(HttpResponse::Ok().body("ok"));
+                    }
+                }
+                "failure" => workflow_runs.workflow_failed(repo, workflow_id, head_branch),
+                _ => {}
+            }
+        }
+        _ => (),
+    }
 
     // Documentation: https://docs.github.com/en/webhooks/webhook-events-and-payloads#issue_comment
     // Payload examples: https://github.com/octokit/webhooks/tree/main/payload-examples

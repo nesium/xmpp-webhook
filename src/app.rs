@@ -12,7 +12,7 @@ use crate::config::{RepoSettings, Settings};
 use crate::routes::{health_check, home, webhook};
 use crate::services::XMPPService;
 use crate::templates::get_environment;
-use crate::webhook::RepoMapping;
+use crate::webhook::{RepoMapping, WorkflowRunsStore};
 
 pub struct App {
     server: Server,
@@ -42,6 +42,7 @@ impl App {
             Arc::new(xmpp_service),
             ApplicationBaseUrl(config.app.base_url),
             config.webhook.repos,
+            WorkflowRunsStore::new(),
             get_environment()?,
         )?;
 
@@ -64,12 +65,14 @@ pub fn run(
     xmpp: Arc<dyn XMPPService>,
     base_url: ApplicationBaseUrl,
     repo_settings: Vec<RepoSettings>,
+    workflow_runs_store: WorkflowRunsStore,
     environment: Environment<'static>,
 ) -> Result<Server> {
     let xmpp = web::Data::new(xmpp);
     let base_url = web::Data::new(base_url);
     let repo_mapping = web::Data::new(RepoMapping::new(repo_settings));
     let environment = web::Data::new(environment);
+    let workflow_runs_store = web::Data::new(workflow_runs_store);
 
     let server = HttpServer::new(move || {
         actix_web::App::new()
@@ -80,6 +83,7 @@ pub fn run(
             .app_data(xmpp.clone())
             .app_data(base_url.clone())
             .app_data(repo_mapping.clone())
+            .app_data(workflow_runs_store.clone())
             .app_data(environment.clone())
     })
     .listen(listener)?

@@ -1,0 +1,14 @@
+---
+source: tests/api/webhook.rs
+expression: "sent_messages[0].message"
+---
+🔴 Workflow [Fail on Push](https://github.com/nesium/test_repo/actions/runs/9703357128) failed!
+
+**Repository**: [test_repo](https://github.com/nesium/test_repo)
+**Branch**: [main](https://github.com/nesium/test_repo/tree/main)
+**Commit**: [449e336](https://github.com/nesium/test_repo/commit/449e336e53bed0e772b0da2834bc210bdf8c9115)
+**Author**: mb <mb@nesium.com>
+**Message**:
+```
+add workflow
+```
