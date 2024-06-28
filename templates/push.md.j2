@@ -3,9 +3,9 @@
 New commits pushed to [{{ event.repository.name }}]({{ event.repository.html_url }}) on branch [{{ branch }}]({{ event.repository.html_url }}/tree/{{ branch }})
 
 {% for commit in event.commits -%}
-**Commit**: [{{ commit.id[:7] }}]({{ commit.url }})
-**Author**: {{ commit.author.name }} <{{ commit.author.email | default("no email") }}>
-**Message**:
+{%- set author_name = commit.author.username if commit.author.username else commit.author.name -%}
+**Commit**: [{{ commit.id[:7] }}]({{ commit.url }})  |  **Author**: {% if commit.author.email %}[{{ author_name }}](mailto:{{ commit.author.email }}){% else %}{{ author_name }}{% endif %}
+
 ```
 {{ commit.message }}
 ```
