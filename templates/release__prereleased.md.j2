@@ -1,0 +1,13 @@
+{% with %}
+{% set author = event.release.author %}
+{% set repo = event.repository %}
+{% set release = event.release %}
+[{{ author.login }}]({{ author.html_url }}) has published prerelease [{% if release.name %}{{ release.name }}{% else %}for tag {{ release.tag_name }}{% endif %}]({{ release.html_url }}) of [{{ event.repository.name }}]({{ event.repository.html_url }}).
+{%- if release.body %}
+
+**Release Notes**:
+```
+{{ release.body }}
+```
+{%- endif -%}
+{% endwith %}
