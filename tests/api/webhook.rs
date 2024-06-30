@@ -109,6 +109,17 @@ async fn test_workflow_run_completed_with_success_sends_message_after_failure() 
     Ok(())
 }
 
+#[tokio::test]
+async fn test_release_released() -> Result<()> {
+    let (status, sent_messages) =
+        receive_webhook("release", include_str!("fixtures/release_released.json")).await?;
+
+    assert!(status.is_success());
+    assert_snapshot!(sent_messages[0].message);
+
+    Ok(())
+}
+
 async fn receive_webhook(
     event_type: impl AsRef<str>,
     body: impl Into<Body>,

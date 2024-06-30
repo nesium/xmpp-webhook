@@ -1,0 +1,12 @@
+---
+source: tests/api/webhook.rs
+expression: "sent_messages[0].message"
+---
+[nesium](https://github.com/nesium) has published release [for tag 0.0.1](https://github.com/nesium/test_repo/releases/tag/0.0.1) of [test_repo](https://github.com/nesium/test_repo).
+
+**Release Notes**:
+```
+- Move user info/profile repo access into domain service
+- Merge user_info and user_profile folders
+- Add vcard-temp parser
+```
