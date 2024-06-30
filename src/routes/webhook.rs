@@ -84,6 +84,10 @@ pub async fn webhook(
                     }
                 }
                 "failure" => workflow_runs.workflow_failed(repo, workflow_id, head_branch),
+                "cancelled" => {
+                    // Ignore cancelled workflows
+                    return Ok(HttpResponse::Ok().body("ok"));
+                }
                 _ => {}
             }
         }

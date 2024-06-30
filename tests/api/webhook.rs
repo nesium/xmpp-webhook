@@ -80,6 +80,20 @@ async fn test_workflow_run_completed_with_success_does_not_send_message() -> Res
 }
 
 #[tokio::test]
+async fn test_workflow_run_completed_with_cancellation_does_not_send_message() -> Result<()> {
+    let (status, sent_messages) = receive_webhook(
+        "workflow_run",
+        include_str!("fixtures/workflow_run_completed_cancelled.json"),
+    )
+    .await?;
+
+    assert!(status.is_success());
+    assert!(sent_messages.is_empty());
+
+    Ok(())
+}
+
+#[tokio::test]
 async fn test_workflow_run_completed_with_success_sends_message_after_failure() -> Result<()> {
     let app = spawn_app().await;
     let client = reqwest::Client::new();
