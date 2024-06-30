@@ -15,6 +15,18 @@ async fn test_push() -> Result<()> {
 }
 
 #[tokio::test]
+/// These can happen when pushing a new tag
+async fn test_ignores_push_with_empty_commits() -> Result<()> {
+    let (status, sent_messages) =
+        receive_webhook("push", include_str!("fixtures/push_without_commits.json")).await?;
+
+    assert!(status.is_success());
+    assert!(sent_messages.is_empty());
+
+    Ok(())
+}
+
+#[tokio::test]
 async fn test_issue_opened() -> Result<()> {
     let (status, sent_messages) =
         receive_webhook("issues", include_str!("fixtures/issue_opened.json")).await?;

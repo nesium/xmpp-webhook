@@ -87,6 +87,16 @@ pub async fn webhook(
                 _ => {}
             }
         }
+        "push" => {
+            // Ignore pushes with empty commits, e.g. when pushing a tag.
+            if event["commits"]
+                .as_array()
+                .map(|arr| arr.is_empty())
+                .unwrap_or_default()
+            {
+                return Ok(HttpResponse::Ok().body("ok"));
+            }
+        }
         _ => (),
     }
 
