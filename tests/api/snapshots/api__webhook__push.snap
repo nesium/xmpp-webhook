@@ -4,23 +4,21 @@ expression: "sent_messages[0].message"
 ---
 New commits pushed to [prose-core-client](https://github.com/prose-im/prose-core-client) on branch [vcard](https://github.com/prose-im/prose-core-client/tree/vcard)
 
-**Commit**: [9cc3bc3](https://github.com/prose-im/prose-core-client/commit/9cc3bc379a1c8e1a2a99dbd1c9eef7095d90e7fc)  |  **Author**: [nesium](mailto:mb@nesium.com)
-
 ```
 refactor: Allow accessing ServerFeatures
 ```
 
----
+**Commit**: [9cc3bc3](https://github.com/prose-im/prose-core-client/commit/9cc3bc379a1c8e1a2a99dbd1c9eef7095d90e7fc)  |  **Author**: [nesium](mailto:mb@nesium.com)
 
-**Commit**: [fe1a899](https://github.com/prose-im/prose-core-client/commit/fe1a899f154654cbf16e566aa9a5e9a38027e94d)  |  **Author**: [nesium](mailto:mb@nesium.com)
+---
 
 ```
 chore: Determine server support for vCard4 and PEP vCard avatar conversion
 ```
 
----
+**Commit**: [fe1a899](https://github.com/prose-im/prose-core-client/commit/fe1a899f154654cbf16e566aa9a5e9a38027e94d)  |  **Author**: [nesium](mailto:mb@nesium.com)
 
-**Commit**: [8b47ae3](https://github.com/prose-im/prose-core-client/commit/8b47ae324d2a156b2fd9103f9ccc3a23e5d8a666)  |  **Author**: [nesium](mailto:mb@nesium.com)
+---
 
 ```
 feat: Introduce Avatar struct to support vCard and PEP avatars
@@ -28,10 +26,12 @@ feat: Introduce Avatar struct to support vCard and PEP avatars
 refs #50, refs #78
 ```
 
----
+**Commit**: [8b47ae3](https://github.com/prose-im/prose-core-client/commit/8b47ae324d2a156b2fd9103f9ccc3a23e5d8a666)  |  **Author**: [nesium](mailto:mb@nesium.com)
 
-**Commit**: [7843210](https://github.com/prose-im/prose-core-client/commit/78432105260019f5ef33d3534ee8c099c9a34147)  |  **Author**: [nesium](mailto:mb@nesium.com)
+---
 
 ```
 feat: Add client and caps on Participant
 ```
+
+**Commit**: [7843210](https://github.com/prose-im/prose-core-client/commit/78432105260019f5ef33d3534ee8c099c9a34147)  |  **Author**: [nesium](mailto:mb@nesium.com)
