@@ -38,6 +38,17 @@ async fn test_issue_opened() -> Result<()> {
 }
 
 #[tokio::test]
+async fn test_issue_closed() -> Result<()> {
+    let (status, sent_messages) =
+        receive_webhook("issues", include_str!("fixtures/issue_closed.json")).await?;
+
+    assert!(status.is_success());
+    assert_snapshot!(sent_messages[0].message);
+
+    Ok(())
+}
+
+#[tokio::test]
 async fn test_issue_comment_created() -> Result<()> {
     let (status, sent_messages) = receive_webhook(
         "issue_comment",
