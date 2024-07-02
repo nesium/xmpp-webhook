@@ -1,6 +1,6 @@
 {% with %}
 {% set branch = event.ref | split('/') | last %}
-New commits pushed to [{{ event.repository.name }}]({{ event.repository.html_url }}) on branch [{{ branch }}]({{ event.repository.html_url }}/tree/{{ branch }})
+New commits {% if event.forced %}force-{% endif %}pushed to [{{ event.repository.name }}]({{ event.repository.html_url }}) on branch [{{ branch }}]({{ event.repository.html_url }}/tree/{{ branch }})
 
 {% for commit in event.commits -%}
 {%- set author_name = commit.author.username if commit.author.username else commit.author.name -%}

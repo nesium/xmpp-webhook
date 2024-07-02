@@ -15,6 +15,17 @@ async fn test_push() -> Result<()> {
 }
 
 #[tokio::test]
+async fn test_force_push() -> Result<()> {
+    let (status, sent_messages) =
+        receive_webhook("push", include_str!("fixtures/push_forced.json")).await?;
+
+    assert!(status.is_success());
+    assert_snapshot!(sent_messages[0].message);
+
+    Ok(())
+}
+
+#[tokio::test]
 /// These can happen when pushing a new tag
 async fn test_ignores_push_with_empty_commits() -> Result<()> {
     let (status, sent_messages) =
