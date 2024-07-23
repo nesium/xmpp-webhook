@@ -2,7 +2,8 @@
 {% set user = event.issue.user %}
 {% set repo = event.repository %}
 {% set issue = event.issue %}
-[{{ user.login }}]({{ user.html_url }}) commented on [issue #{{ issue.number }}]({{ issue.html_url }}) in [{{ repo.name }}]({{ repo.html_url }})
+{% set comment = event.comment %}
+[{{ comment.user.login }}]({{ comment.user.html_url }}) commented on [issue #{{ issue.number }}]({{ issue.html_url }}) in [{{ repo.name }}]({{ repo.html_url }})
 
 **Title**: {{ issue.title }}
 {% endwith %}
