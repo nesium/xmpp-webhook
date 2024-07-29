@@ -3,13 +3,14 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use futures::FutureExt;
+use prose_markup::MarkdownParser;
 use prose_xmpp::connector::xmpp_rs::Connector;
 use prose_xmpp::stanza::message::MessageType;
 use prose_xmpp::stanza::presence::Show;
 use prose_xmpp::stanza::Message;
 use prose_xmpp::{
     client::Event as ClientEvent, mods, mods::chat::Event as ChatEvent, BareJid, Client,
-    ConnectionError, Event, Jid, Secret,
+    ConnectionError, Event, IDProvider, Jid, Secret, UUIDProvider,
 };
 use tokio::sync::mpsc;
 use tracing::{info, warn};
@@ -109,7 +110,19 @@ impl XMPPService {
                     RoomId::User(_) => MessageType::Chat,
                     RoomId::Room(_) => MessageType::Groupchat,
                 };
-                chat.send_message(to, body, &message_type, None)?;
+
+                let parser = MarkdownParser::new(&body);
+                let fallback = parser.convert_to_message_styling();
+
+                let message = Message::new()
+                    .set_id(UUIDProvider::new().new_id().into())
+                    .set_type(message_type)
+                    .set_to(to)
+                    .add_content("text/markdown", body)
+                    .set_body(fallback)
+                    .set_store(true);
+
+                chat.send_raw_message(message, false)?;
             }
         }
         Ok(())
@@ -145,6 +158,7 @@ impl XMPPService {
             info!("Entering room {room}…");
             muc.enter_room(
                 &room.with_resource_str("bot").unwrap(),
+                None,
                 None,
                 Some(Show::Chat),
                 None,
