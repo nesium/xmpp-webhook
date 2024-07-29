@@ -2,6 +2,6 @@
 source: tests/api/webhook.rs
 expression: "sent_messages[0].message"
 ---
-[nesium](https://github.com/nesium) has closed [issue #2](https://github.com/nesium/test_repo/issues/2) in [test_repo](https://github.com/nesium/test_repo)
+[other user](https://github.com/other_user) has closed [issue #2](https://github.com/nesium/test_repo/issues/2) in [test_repo](https://github.com/nesium/test_repo)
 
 **Title**: Item 1

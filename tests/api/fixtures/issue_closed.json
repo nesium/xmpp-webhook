@@ -164,13 +164,13 @@
     "default_branch": "main"
   },
   "sender": {
-    "login": "nesium",
+    "login": "other user",
     "id": 39174,
     "node_id": "MDQ6VXNlcjM5MTc0",
     "avatar_url": "https://avatars.githubusercontent.com/u/39174?v=4",
     "gravatar_id": "",
-    "url": "https://api.github.com/users/nesium",
-    "html_url": "https://github.com/nesium",
+    "url": "https://api.github.com/users/other_user",
+    "html_url": "https://github.com/other_user",
     "followers_url": "https://api.github.com/users/nesium/followers",
     "following_url": "https://api.github.com/users/nesium/following{/other_user}",
     "gists_url": "https://api.github.com/users/nesium/gists{/gist_id}",
