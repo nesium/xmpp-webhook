@@ -1,4 +1,4 @@
 .idea
-config/secrets.yaml
+config/secrets.toml
 target/
 Dockerfile

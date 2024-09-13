@@ -1,0 +1,10 @@
+[app]
+port = 8000
+
+[[webhook.repos]]
+repo = "prose-im/prose-core-client"
+room = "org.prose.public-channel.dev-core#1@groups.prose.org"
+
+[[webhook.repos]]
+repo = "nesium/test_repo"
+room = "org.prose.channel.v1oupwna@conference.nsm.chat"
